@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyNews</string>
+    <string name="error_message">Oops!! Something went wrong. Please check your Internet connection. Tap to retry.
+    </string>
 </resources>
