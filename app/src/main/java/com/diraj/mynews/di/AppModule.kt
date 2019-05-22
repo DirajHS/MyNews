@@ -6,10 +6,12 @@ import com.diraj.mynews.db.NewsDB
 import com.diraj.mynews.db.TopHeadlinesDao
 import com.diraj.mynews.network.INewsInterface
 import com.diraj.mynews.network.LiveDataCallAdapterFactory
+import com.diraj.mynews.util.RateLimiter
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module(includes = [ViewModelModule::class])
@@ -38,5 +40,11 @@ class AppModule {
     @Provides
     fun provideTopHeadlinesDao(db: NewsDB): TopHeadlinesDao {
         return db.topHeadlinesDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRateLimiter(): RateLimiter<String> {
+        return RateLimiter(10, TimeUnit.MINUTES)
     }
 }

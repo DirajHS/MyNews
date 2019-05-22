@@ -13,32 +13,35 @@ import com.diraj.mynews.network.Resource
 import javax.inject.Inject
 
 class TopHeadlinesViewModel @Inject constructor(
-    topHeadlinesFactory: TopHeadlinesFactory
+    private var topHeadlinesFactory: TopHeadlinesFactory
 ) : ViewModel() {
 
     var statusResource: LiveData<Resource<TopHeadlines>>
-    var resource: LiveData<PagedList<Articles>>
+    lateinit var resource: LiveData<PagedList<Articles>>
+    private val pagedListConfig: PagedList.Config
 
     init {
-        //topHeadlinesFactory = TopHeadlinesFactory(appExecutors, newsApiService, topHeadlinesDao)
-
         statusResource =
             Transformations.switchMap(topHeadlinesFactory.topHeadlinesLiveData) { input: TopHeadlinesRepository? ->
                 input!!.response
             }
-
-        val pagedListConfig = PagedList.Config.Builder()
+        pagedListConfig = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(20)
             .build()
+    }
+
+    fun listIsEmpty(): Boolean {
+        return resource.value?.isEmpty() ?: true
+    }
+
+    fun fetchNews(category: String?) {
+
+        topHeadlinesFactory.setCategory(category!!)
 
         resource = LivePagedListBuilder(
             topHeadlinesFactory,
             pagedListConfig
         ).build()
-    }
-
-    fun listIsEmpty(): Boolean {
-        return resource.value?.isEmpty() ?: true
     }
 }

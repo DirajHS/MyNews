@@ -11,7 +11,14 @@ class TopHeadlinesFactory @Inject constructor(private val topHeadlinesRepository
 
     val topHeadlinesLiveData = MutableLiveData<TopHeadlinesRepository>()
 
+    private lateinit var category: String
+
+    fun setCategory(category: String) {
+        this.category = category
+    }
+
     override fun create(): DataSource<Int, Articles> {
+        topHeadlinesRepository.setCategory(category)
         topHeadlinesLiveData.postValue(topHeadlinesRepository)
         return topHeadlinesRepository
     }

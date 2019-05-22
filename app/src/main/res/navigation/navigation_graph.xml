@@ -2,8 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/navigation_graph"
-            app:startDestination="@id/topHeadlinesFragment">
-
-    <fragment android:id="@+id/topHeadlinesFragment" android:name="com.diraj.mynews.ui.TopHeadlinesFragment"
-              android:label="top_headlines_fragment" tools:layout="@layout/top_headlines_fragment"/>
+            app:startDestination="@id/tabbedNewsFragment">
+    <fragment android:id="@+id/tabbedNewsFragment" android:name="com.diraj.mynews.ui.TabbedNewsFragment"
+              android:label="TabbedNewsFragment" tools:layout="@layout/tabbed_news_layout"/>
 </navigation>

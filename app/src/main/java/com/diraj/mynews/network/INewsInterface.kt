@@ -17,11 +17,12 @@ interface INewsInterface {
         @Query("page") page: Int
     ): LiveData<ApiResponse<TopHeadlines>>
 
+    @Headers("X-Api-Key:" + BuildConfig.API_KEY)
     @GET("/v2/top-headlines")
     fun getTopHeadlinesWithCategory(
         @Query("country") country: String,
         @Query("category") category: String,
         @Query("pageSize") pageSize: Int,
         @Query("page") page: Int
-    )
+    ): LiveData<ApiResponse<TopHeadlines>>
 }

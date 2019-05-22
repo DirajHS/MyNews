@@ -6,7 +6,7 @@ import com.diraj.mynews.model.TopHeadlines
 
 @Database(
     entities = [TopHeadlines::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 abstract class NewsDB : RoomDatabase() {

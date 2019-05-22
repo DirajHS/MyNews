@@ -23,7 +23,13 @@ class TopHeadlinesFragment : Fragment(), Injectable {
     lateinit var viewModelFactory: NewsViewModelFactory
 
     companion object {
-        fun newInstance() = TopHeadlinesFragment()
+        fun newInstance(category: String): TopHeadlinesFragment {
+            val topHeadlinesFragment = TopHeadlinesFragment()
+            val args = Bundle()
+            args.putString("category", category)
+            topHeadlinesFragment.arguments = args
+            return topHeadlinesFragment
+        }
     }
 
     private lateinit var viewModel: TopHeadlinesViewModel
@@ -46,6 +52,8 @@ class TopHeadlinesFragment : Fragment(), Injectable {
             .get(TopHeadlinesViewModel::class.java)
 
         initAdapter()
+
+        viewModel.fetchNews(arguments!!.getString("category"))
 
         observeData()
     }

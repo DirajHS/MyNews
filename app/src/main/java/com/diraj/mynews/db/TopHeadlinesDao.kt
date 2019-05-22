@@ -10,9 +10,9 @@ import com.diraj.mynews.model.TopHeadlines
 @Dao
 interface TopHeadlinesDao {
 
-    @Query("SELECT * FROM topheadlines")
-    fun getCachedTopHeadlines(): LiveData<TopHeadlines>
+    @Query("SELECT * FROM topheadlines WHERE category = :category AND page = :page")
+    fun getCachedTopHeadlines(category :String, page:Int): LiveData<TopHeadlines>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTopHeadlines(topHeadlines: TopHeadlines)
+    fun insertTopHeadlines(topHeadlines: TopHeadlines) : Long
 }
