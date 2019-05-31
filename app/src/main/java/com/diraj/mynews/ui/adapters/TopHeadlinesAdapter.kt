@@ -10,7 +10,10 @@ import com.diraj.mynews.databinding.ArticlesItemLayoutBinding
 import com.diraj.mynews.databinding.NetworkItemBinding
 import com.diraj.mynews.model.Articles
 
-class TopHeadlinesAdapter : BaseListAdapter<Articles, RecyclerView.ViewHolder>(TopHeadlinesDiffCallback) {
+class TopHeadlinesAdapter(
+    private val itemClickCallback: IOnClickInterface<Articles>,
+    private val retry: () -> Unit
+) : BaseListAdapter<Articles, RecyclerView.ViewHolder>(TopHeadlinesDiffCallback) {
 
     private val TYPE_PROGRESS = 0
     private val TYPE_ITEM = 1
@@ -20,7 +23,7 @@ class TopHeadlinesAdapter : BaseListAdapter<Articles, RecyclerView.ViewHolder>(T
         return when (viewType) {
             TYPE_PROGRESS -> {
                 val networkBinding: NetworkItemBinding = NetworkItemBinding.inflate(layoutInflater, parent, false)
-                NetworkStateItemViewHolder(networkBinding, null)
+                NetworkStateItemViewHolder(networkBinding, retry = retry)
             }
             else -> {
                 val articleBinding: ArticlesItemLayoutBinding =
@@ -71,9 +74,9 @@ class TopHeadlinesAdapter : BaseListAdapter<Articles, RecyclerView.ViewHolder>(T
 
         fun bindTo(article: Articles) {
             binding.setVariable(BR.article, article)
-            /*binding.root.setOnClickListener { view ->
-                itemClickCallback.onItemClicked(mainType, view)
-            }*/
+            binding.root.setOnClickListener { view ->
+                itemClickCallback.onItemClicked(article, view)
+            }
         }
     }
 }

@@ -44,4 +44,13 @@ class TopHeadlinesViewModel @Inject constructor(
             pagedListConfig
         ).build()
     }
+
+    fun retry () {
+        topHeadlinesFactory.topHeadlinesLiveData.value?.retry()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        topHeadlinesFactory.topHeadlinesLiveData.value?.onCleared()
+    }
 }

@@ -1,5 +1,6 @@
 package com.diraj.mynews.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
@@ -9,18 +10,27 @@ import com.diraj.mynews.model.Articles
 import com.diraj.mynews.model.TopHeadlines
 import com.diraj.mynews.network.*
 import com.diraj.mynews.util.RateLimiter
+import io.reactivex.Completable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class TopHeadlinesRepository @Inject constructor(
     private val appExecutors: AppExecutors,
     val newsInterface: INewsInterface,
     private val topHeadlinesDao: TopHeadlinesDao,
-    private val repoListRateLimit: RateLimiter<String>
+    private val repoListRateLimit: RateLimiter<String>,
+    private val compositeDisposable: CompositeDisposable
 ) : PageKeyedDataSource<Int, Articles>() {
 
-    private var fetchedItemsCount = 0
+    companion object {
+        var TAG = TopHeadlinesRepository::class.simpleName
+    }
 
     val response: MutableLiveData<Resource<TopHeadlines>> = MutableLiveData()
+
+    private var retryCompletable: Completable? = null
 
     private lateinit var category: String
 
@@ -29,6 +39,7 @@ class TopHeadlinesRepository @Inject constructor(
     }
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Articles>) {
+        val rateLimiterKey = category + 0
         appExecutors.mainThread().execute {
             object : NetworkBoundResource<TopHeadlines, TopHeadlines>(appExecutors) {
 
@@ -39,7 +50,8 @@ class TopHeadlinesRepository @Inject constructor(
                 }
 
                 override fun shouldFetch(data: TopHeadlines?): Boolean {
-                    return repoListRateLimit.shouldFetch(category) || data == null
+                    val shouldFetch = repoListRateLimit.shouldFetch(rateLimiterKey)
+                    return shouldFetch || data == null
                 }
 
                 override fun loadFromDb(): LiveData<TopHeadlines> {
@@ -61,6 +73,9 @@ class TopHeadlinesRepository @Inject constructor(
                     }
                     Status.ERROR -> {
                         response.postValue(result)
+                        setRetry(Action { loadInitial(params, callback) })
+                        repoListRateLimit.reset(rateLimiterKey)
+                        Log.e(TAG, result.message)
                     }
                 }
             }
@@ -69,6 +84,7 @@ class TopHeadlinesRepository @Inject constructor(
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Articles>) {
+        val rateLimiterKey = category + params.key
         appExecutors.mainThread().execute {
             object : NetworkBoundResource<TopHeadlines, TopHeadlines>(appExecutors) {
                 override fun saveCallResult(item: TopHeadlines) {
@@ -78,7 +94,8 @@ class TopHeadlinesRepository @Inject constructor(
                 }
 
                 override fun shouldFetch(data: TopHeadlines?): Boolean {
-                    return repoListRateLimit.shouldFetch(category) || data == null
+                    val shouldFetch = repoListRateLimit.shouldFetch(rateLimiterKey)
+                    return shouldFetch || data == null
                 }
 
                 override fun loadFromDb(): LiveData<TopHeadlines> {
@@ -96,15 +113,13 @@ class TopHeadlinesRepository @Inject constructor(
                     }
                     Status.SUCCESS -> {
                         response.postValue(result)
-                        fetchedItemsCount += result.data!!.articles!!.size
-                        if (fetchedItemsCount < result.data.totalResults!!) {
-                            callback.onResult(result.data.articles!!, params.key + 1)
-                        } else {
-                            callback.onResult(result.data.articles!!, null)
-                        }
+                        callback.onResult(result.data!!.articles!!, params.key + 1)
                     }
                     Status.ERROR -> {
                         response.postValue(result)
+                        setRetry(Action { loadAfter(params, callback) })
+                        repoListRateLimit.reset(rateLimiterKey)
+                        Log.e(TAG, result.message)
                     }
                 }
             }
@@ -114,4 +129,21 @@ class TopHeadlinesRepository @Inject constructor(
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Articles>) {
     }
 
+    fun retry() {
+        if (retryCompletable != null) {
+            compositeDisposable.add(
+                retryCompletable!!
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            )
+        }
+    }
+
+    private fun setRetry(action: Action?) {
+        retryCompletable = if (action == null) null else Completable.fromAction(action)
+    }
+
+    fun onCleared() {
+        compositeDisposable.dispose()
+    }
 }

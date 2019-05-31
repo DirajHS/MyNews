@@ -18,6 +18,7 @@
                 android:text="@{article.title}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Test title"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Test title with lot of words to check if the text is getting out of the screen zone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,6 +1,5 @@
 package com.diraj.mynews.network
 
-import android.util.Log
 import retrofit2.Response
 
 sealed class ApiResponse<T> {
@@ -15,7 +14,6 @@ sealed class ApiResponse<T> {
                 if (body == null || response.code() == 204) {
                     ApiEmptyResponse()
                 } else {
-                    Log.d("diraj", response.raw().request().url().toString())
                     ApiSuccessResponse(
                         body = body
                     )

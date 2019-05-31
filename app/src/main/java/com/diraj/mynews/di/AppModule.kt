@@ -9,6 +9,7 @@ import com.diraj.mynews.network.LiveDataCallAdapterFactory
 import com.diraj.mynews.util.RateLimiter
 import dagger.Module
 import dagger.Provides
+import io.reactivex.disposables.CompositeDisposable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -46,5 +47,10 @@ class AppModule {
     @Provides
     fun provideRateLimiter(): RateLimiter<String> {
         return RateLimiter(10, TimeUnit.MINUTES)
+    }
+
+    @Provides
+    fun provideCompositeDisposable(): CompositeDisposable {
+        return CompositeDisposable()
     }
 }

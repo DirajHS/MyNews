@@ -1,6 +1,7 @@
 package com.diraj.mynews.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +15,12 @@ import com.diraj.mynews.R
 import com.diraj.mynews.databinding.TopHeadlinesFragmentBinding
 import com.diraj.mynews.di.Injectable
 import com.diraj.mynews.di.NewsViewModelFactory
+import com.diraj.mynews.model.Articles
+import com.diraj.mynews.ui.adapters.IOnClickInterface
 import com.diraj.mynews.ui.adapters.TopHeadlinesAdapter
 import javax.inject.Inject
 
-class TopHeadlinesFragment : Fragment(), Injectable {
+class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles> {
 
     @Inject
     lateinit var viewModelFactory: NewsViewModelFactory
@@ -58,8 +61,12 @@ class TopHeadlinesFragment : Fragment(), Injectable {
         observeData()
     }
 
+    override fun onItemClicked(t: Articles, view: View) {
+        //TODO launch the details fragment
+    }
+
     private fun initAdapter() {
-        adapter = TopHeadlinesAdapter()
+        adapter = TopHeadlinesAdapter(this) { viewModel.retry() }
         topHeadlinesBinding.rvTopHeadlines.layoutManager = LinearLayoutManager(context!!.applicationContext)
         topHeadlinesBinding.rvTopHeadlines.adapter = this.adapter
 
@@ -77,6 +84,7 @@ class TopHeadlinesFragment : Fragment(), Injectable {
         })
 
         viewModel.statusResource.observe(this, Observer { status ->
+            Log.d(TopHeadlinesFragment::class.simpleName, "${status.message}")
             if (!viewModel.listIsEmpty()) adapter.setNewNetworkState(status)
         })
     }
