@@ -4,5 +4,12 @@
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/navigation_graph"
             app:startDestination="@id/tabbedNewsFragment">
     <fragment android:id="@+id/tabbedNewsFragment" android:name="com.diraj.mynews.ui.TabbedNewsFragment"
-              android:label="TabbedNewsFragment" tools:layout="@layout/tabbed_news_layout"/>
+              android:label="TabbedNewsFragment" tools:layout="@layout/tabbed_news_layout">
+        <action android:id="@+id/action_tabbedNewsFragment_to_newsDetailsFragment"
+                app:destination="@id/newsDetailsFragment"/>
+    </fragment>
+    <fragment android:id="@+id/newsDetailsFragment" android:name="com.diraj.mynews.ui.details.NewsDetailsFragment"
+              android:label="news_details_fragment" tools:layout="@layout/news_details_fragment"/>
+    <fragment android:id="@+id/topHeadlinesFragment" android:name="com.diraj.mynews.ui.TopHeadlinesFragment"
+              android:label="top_headlines_fragment" tools:layout="@layout/top_headlines_fragment"/>
 </navigation>

@@ -41,6 +41,8 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
 
     private lateinit var adapter: TopHeadlinesAdapter
 
+    private lateinit var newsClickInterface: IOnNewsClickInterface
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +64,7 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
     }
 
     override fun onItemClicked(t: Articles, view: View) {
-        //TODO launch the details fragment
+        newsClickInterface.onNewsArticleClick(t)
     }
 
     private fun initAdapter() {
@@ -87,6 +89,10 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
             Log.d(TopHeadlinesFragment::class.simpleName, "${status.message}")
             if (!viewModel.listIsEmpty()) adapter.setNewNetworkState(status)
         })
+    }
+
+    fun setNewsClickListener(newsClickInterface: IOnNewsClickInterface) {
+        this.newsClickInterface = newsClickInterface
     }
 
 }
