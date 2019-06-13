@@ -56,6 +56,8 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(TopHeadlinesViewModel::class.java)
 
+        (activity as IActionBarInterface).setUpActionBar()
+
         initAdapter()
 
         viewModel.fetchNews(arguments!!.getString("category"))
@@ -63,8 +65,8 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
         observeData()
     }
 
-    override fun onItemClicked(t: Articles, view: View) {
-        newsClickInterface.onNewsArticleClick(t)
+    override fun onItemClicked(t: Articles, view: View, transitionName: String) {
+        newsClickInterface.onNewsArticleClick(t, view, transitionName)
     }
 
     private fun initAdapter() {

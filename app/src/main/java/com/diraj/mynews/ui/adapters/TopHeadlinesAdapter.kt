@@ -3,9 +3,11 @@ package com.diraj.mynews.ui.adapters
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.diraj.mynews.R
 import com.diraj.mynews.databinding.ArticlesItemLayoutBinding
 import com.diraj.mynews.databinding.NetworkItemBinding
 import com.diraj.mynews.model.Articles
@@ -74,8 +76,10 @@ class TopHeadlinesAdapter(
 
         fun bindTo(article: Articles) {
             binding.setVariable(BR.article, article)
-            binding.root.setOnClickListener { view ->
-                itemClickCallback.onItemClicked(article, view)
+            binding.tvArticleTitle.setOnClickListener { view ->
+                val transitionName = binding.root.context.getString(R.string.transition_name)
+                ViewCompat.setTransitionName(binding.tvArticleTitle, transitionName)
+                itemClickCallback.onItemClicked(article, view, transitionName)
             }
         }
     }

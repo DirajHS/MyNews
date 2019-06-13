@@ -10,15 +10,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <TextView
-                android:id="@+id/tv_article_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin12dp"
-                android:text="@{article.title}"
+        <ImageView
+                android:id="@+id/iv_news_thumbnail"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_article_title"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="@dimen/margin12dp"
+                android:layout_marginTop="@dimen/margin12dp"
+                app:imageUrl="@{article.urlToImage}"/>
+
+        <TextView
+                android:id="@+id/tv_article_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{article.title}"
+                android:fontFamily="sans-serif-black"
+                android:textSize="16sp"
+                android:textColor="@color/colorText"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="@dimen/margin12dp"
+                app:layout_constraintStart_toEndOf="@+id/iv_news_thumbnail"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_article_source"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:text="Test title with lot of words to check if the text is getting out of the screen zone"/>
+                tools:text="Test title with lot of words to check if the text is getting out of the screen zone"
+                app:layout_constraintHorizontal_bias="0.5"/>
+
+        <TextView
+                android:id="@+id/tv_article_source"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{article.source.name}"
+                android:fontFamily="sans-serif"
+                android:textSize="@dimen/text14sp"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="@dimen/margin12dp"
+                app:layout_constraintStart_toEndOf="@+id/iv_news_thumbnail"
+                app:layout_constraintTop_toBottomOf="@id/tv_article_title"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="BBC News"
+                app:layout_constraintHorizontal_bias="0.5"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

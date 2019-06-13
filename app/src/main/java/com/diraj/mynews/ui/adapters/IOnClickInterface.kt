@@ -4,5 +4,5 @@ import android.view.View
 
 interface IOnClickInterface<T> {
 
-    fun onItemClicked(t: T, view: View)
+    fun onItemClicked(t: T, view: View, transitionName: String)
 }
