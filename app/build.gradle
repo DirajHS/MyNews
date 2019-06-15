@@ -59,6 +59,7 @@ dependencies {
     implementation deps.rxkotlin.rxjava2
     implementation deps.rxkotlin.rxandroid
     implementation deps.glide.runtime
+    implementation deps.glide.recyclerview
 
     implementation deps.dagger.runtime
     implementation deps.dagger.android
@@ -78,6 +79,7 @@ dependencies {
     kapt deps.dagger.compiler
     kapt deps.room.compiler
     kapt deps.lifecycle.compiler
+    kapt deps.glide.compiler
 
     testImplementation deps.junit
     testImplementation deps.mock_web_server

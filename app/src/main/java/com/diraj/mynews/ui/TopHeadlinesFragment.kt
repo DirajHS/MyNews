@@ -11,8 +11,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.diraj.mynews.R
 import com.diraj.mynews.databinding.TopHeadlinesFragmentBinding
+import com.diraj.mynews.di.GlideApp
+import com.diraj.mynews.di.GlideRequests
 import com.diraj.mynews.di.Injectable
 import com.diraj.mynews.di.NewsViewModelFactory
 import com.diraj.mynews.model.Articles
@@ -43,6 +47,12 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
 
     private lateinit var newsClickInterface: IOnNewsClickInterface
 
+    private val PRELOAD_AHEAD_ITEMS = 5
+
+    private var preloadSizeProvider: ViewPreloadSizeProvider<Articles>? = null
+    lateinit var glideRequests: GlideRequests
+    lateinit var preloader: RecyclerViewPreloader<Articles>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,7 +80,12 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
     }
 
     private fun initAdapter() {
-        adapter = TopHeadlinesAdapter(this) { viewModel.retry() }
+        glideRequests = GlideApp.with(this)
+        adapter = TopHeadlinesAdapter(this, { viewModel.retry() }, glideRequests, context!!)
+        preloadSizeProvider = ViewPreloadSizeProvider()
+        preloader = RecyclerViewPreloader(glideRequests, adapter, preloadSizeProvider!!, PRELOAD_AHEAD_ITEMS)
+
+        topHeadlinesBinding.rvTopHeadlines.addOnScrollListener(preloader)
         topHeadlinesBinding.rvTopHeadlines.layoutManager = LinearLayoutManager(context!!.applicationContext)
         topHeadlinesBinding.rvTopHeadlines.adapter = this.adapter
 

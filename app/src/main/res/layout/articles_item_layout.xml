@@ -21,8 +21,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 android:scaleType="fitCenter"
                 android:layout_marginStart="@dimen/margin12dp"
-                android:layout_marginTop="@dimen/margin12dp"
-                app:imageUrl="@{article.urlToImage}"/>
+                android:layout_marginTop="@dimen/margin12dp"/>
 
         <TextView
                 android:id="@+id/tv_article_title"
