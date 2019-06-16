@@ -1,26 +1,23 @@
 package com.diraj.mynews.ui.adapters
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.TranslateAnimation
+import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.diraj.mynews.R
 import com.diraj.mynews.databinding.ArticlesItemLayoutBinding
 import com.diraj.mynews.databinding.NetworkItemBinding
 import com.diraj.mynews.di.GlideApp
-import com.diraj.mynews.di.GlideRequest
-import com.diraj.mynews.di.GlideRequests
 import com.diraj.mynews.model.Articles
 import java.util.Collections.emptyList
 import java.util.Collections.singletonList
@@ -28,26 +25,9 @@ import java.util.Collections.singletonList
 class TopHeadlinesAdapter(
     private val itemClickCallback: IOnClickInterface<Articles>,
     private val retry: () -> Unit,
-    glideRequests: GlideRequests,
     private val context: Context
 ) : BaseListAdapter<Articles, RecyclerView.ViewHolder>(TopHeadlinesDiffCallback),
     ListPreloader.PreloadModelProvider<Articles> {
-
-    private var fullRequest: GlideRequest<Drawable>? = null
-    private var thumbRequest: GlideRequest<Drawable>? = null
-
-    init {
-        fullRequest = glideRequests
-            .asDrawable()
-            .fitCenter()
-            .placeholder(ColorDrawable(Color.GRAY))
-
-        thumbRequest = glideRequests
-            .asDrawable()
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .override(250, 250)
-            .transition(withCrossFade())
-    }
 
     private val TYPE_PROGRESS = 0
     private val TYPE_ITEM = 1
@@ -117,14 +97,39 @@ class TopHeadlinesAdapter(
 
         fun bindTo(article: Articles) {
             binding.setVariable(BR.article, article)
-            fullRequest!!.load(article.urlToImage)
-                .thumbnail(thumbRequest!!.load(article.urlToImage))
-                .into(binding.ivNewsThumbnail)
             binding.tvArticleTitle.setOnClickListener { view ->
-                val transitionName = binding.root.context.getString(R.string.transition_name)
-                ViewCompat.setTransitionName(binding.tvArticleTitle, transitionName)
-                itemClickCallback.onItemClicked(article, view, transitionName)
+                //val transitionName = binding.root.context.getString(R.string.transition_name)
+                //ViewCompat.setTransitionName(binding.ivNewsThumbnail, transitionName)
+                //itemClickCallback.onItemClicked(article, binding.ivNewsThumbnail, transitionName)
+                slideAnimate(binding.ivAnimateThumbnail, article, view)
             }
+        }
+
+        private fun slideAnimate(imageView: ImageView, article: Articles, view: View) {
+            imageView.visibility = View.VISIBLE
+            val animate = TranslateAnimation(
+                imageView.width.toFloat(), // fromXDelta
+                0f, // toXDelta
+                0f, // fromYDelta
+                0f
+            )                // toYDelta
+            animate.duration = 350
+            animate.fillAfter = true
+            imageView.startAnimation(animate)
+            animate.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationRepeat(animation: Animation?) {
+                }
+
+                override fun onAnimationStart(animation: Animation?) {
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    val transitionName = binding.root.context.getString(R.string.transition_name)
+                    ViewCompat.setTransitionName(binding.ivAnimateThumbnail, transitionName)
+                    itemClickCallback.onItemClicked(article, imageView, transitionName)
+                }
+
+            })
         }
     }
 }

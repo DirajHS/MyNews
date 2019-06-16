@@ -19,6 +19,7 @@
                 app:layout_constraintEnd_toStartOf="@id/tv_article_title"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
+                app:imageUrl="@{article.urlToImage}"
                 android:scaleType="fitCenter"
                 android:layout_marginStart="@dimen/margin12dp"
                 android:layout_marginTop="@dimen/margin12dp"/>
@@ -58,6 +59,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="BBC News"
                 app:layout_constraintHorizontal_bias="0.5"/>
+
+        <ImageView
+                android:id="@+id/iv_animate_thumbnail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                android:scaleType="centerCrop"
+                app:imageUrl="@{article.urlToImage}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:src="@drawable/ic_launcher_background"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

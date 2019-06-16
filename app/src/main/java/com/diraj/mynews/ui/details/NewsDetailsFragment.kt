@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.TransitionInflater
+import com.diraj.mynews.BR
 import com.diraj.mynews.R
 import com.diraj.mynews.databinding.NewsDetailsFragmentBinding
 import com.diraj.mynews.model.Articles
@@ -34,7 +35,6 @@ class NewsDetailsFragment : Fragment() {
         newsLayoutBinding =  DataBindingUtil.inflate(inflater, R.layout.news_details_fragment, container, false)
         return newsLayoutBinding.root
     }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NewsDetailsViewModel::class.java)
@@ -43,6 +43,7 @@ class NewsDetailsFragment : Fragment() {
 
         val article = arguments!!.getSerializable("article") as Articles
         newsLayoutBinding.tvArticleDetails.text = article.title
+        newsLayoutBinding.setVariable(BR.article, article)
     }
 
 }

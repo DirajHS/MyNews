@@ -39,7 +39,7 @@ class TopHeadlinesRepository @Inject constructor(
     }
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Articles>) {
-        val rateLimiterKey = category + 0
+        val rateLimiterKey = category + 1
         appExecutors.mainThread().execute {
             object : NetworkBoundResource<TopHeadlines, TopHeadlines>(appExecutors) {
 
@@ -59,7 +59,7 @@ class TopHeadlinesRepository @Inject constructor(
                 }
 
                 override fun createCall(): LiveData<ApiResponse<TopHeadlines>> {
-                    return newsInterface.getTopHeadlinesWithCategory("in", category, 20, 0)
+                    return newsInterface.getTopHeadlinesWithCategory("in", category, 20, 1)
                 }
 
             }.asLiveData().observeForever { result ->
@@ -69,7 +69,7 @@ class TopHeadlinesRepository @Inject constructor(
                     }
                     Status.SUCCESS -> {
                         response.postValue(result)
-                        callback.onResult(result.data!!.articles!!, 0, 1)
+                        callback.onResult(result.data!!.articles!!, 1, 2)
                     }
                     Status.ERROR -> {
                         response.postValue(result)
