@@ -12,6 +12,31 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/anim_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintVertical_bias="0.5"
+                android:layout_centerInParent="true"/>
+
+        <TextView
+                android:id="@+id/tv_error"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_margin="@dimen/margin12dp"
+                android:text="@string/error_message"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text14sp"
+                android:fontFamily="sans-serif"/>
+
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_top_headlines"
                 android:layout_width="0dp"

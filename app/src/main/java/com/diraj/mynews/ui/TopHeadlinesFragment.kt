@@ -1,7 +1,6 @@
 package com.diraj.mynews.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import com.diraj.mynews.di.GlideApp
 import com.diraj.mynews.di.Injectable
 import com.diraj.mynews.di.NewsViewModelFactory
 import com.diraj.mynews.model.Articles
+import com.diraj.mynews.network.Status
 import com.diraj.mynews.ui.adapters.IOnClickInterface
 import com.diraj.mynews.ui.adapters.TopHeadlinesAdapter
 import javax.inject.Inject
@@ -79,6 +79,8 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
         viewModel.fetchNews(arguments!!.getString("category"))
 
         observeData()
+
+        topHeadlinesBinding.animProgress.setAnimation(R.raw.news_animation)
     }
 
     private fun initAdapter() {
@@ -104,7 +106,10 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
         })
 
         viewModel.statusResource.observe(this, Observer { status ->
-            Log.d(TopHeadlinesFragment::class.simpleName, "${status.message}")
+            topHeadlinesBinding.animProgress.visibility =
+                if (viewModel.listIsEmpty() && status.status == Status.LOADING) View.VISIBLE else View.GONE
+            topHeadlinesBinding.tvError.visibility =
+                if (viewModel.listIsEmpty() && status.status == Status.ERROR) View.VISIBLE else View.GONE
             if (!viewModel.listIsEmpty()) adapter.setNewNetworkState(status)
         })
     }

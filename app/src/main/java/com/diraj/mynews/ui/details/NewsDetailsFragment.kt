@@ -42,7 +42,6 @@ class NewsDetailsFragment : Fragment() {
         (activity as IActionBarInterface).setUpToolbar(newsLayoutBinding.collapsingToolbar, newsLayoutBinding.toolbar)
 
         val article = arguments!!.getSerializable("article") as Articles
-        newsLayoutBinding.tvArticleDetails.text = article.title
         newsLayoutBinding.setVariable(BR.article, article)
     }
 
