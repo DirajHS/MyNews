@@ -14,9 +14,9 @@ import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
+import timber.log.Timber
 
-class TopHeadlinesRepository @Inject constructor(
+class TopHeadlinesRepository constructor(
     private val appExecutors: AppExecutors,
     val newsInterface: INewsInterface,
     private val topHeadlinesDao: TopHeadlinesDao,
@@ -63,20 +63,26 @@ class TopHeadlinesRepository @Inject constructor(
                 }
 
             }.asLiveData().observeForever { result ->
-                when (result.status) {
-                    Status.LOADING -> {
-                        response.postValue(result)
+                try {
+                    when (result.status) {
+                        Status.LOADING -> {
+                            response.postValue(result)
+                        }
+                        Status.SUCCESS -> {
+                            response.postValue(result)
+                            callback.onResult(result.data!!.articles!!, 1, 2)
+                        }
+                        Status.ERROR -> {
+                            response.postValue(result)
+                            setRetry(Action { loadInitial(params, callback) })
+                            repoListRateLimit.reset(rateLimiterKey)
+                            Log.e(TAG, result.message)
+                        }
                     }
-                    Status.SUCCESS -> {
-                        response.postValue(result)
-                        callback.onResult(result.data!!.articles!!, 1, 2)
-                    }
-                    Status.ERROR -> {
-                        response.postValue(result)
-                        setRetry(Action { loadInitial(params, callback) })
-                        repoListRateLimit.reset(rateLimiterKey)
-                        Log.e(TAG, result.message)
-                    }
+                } catch (e: IllegalStateException) {
+                    Timber.e("IllegalStateException occurred, lets retry by invalidating")
+                    //try self invalidate
+                    invalidate()
                 }
             }
         }
@@ -107,20 +113,26 @@ class TopHeadlinesRepository @Inject constructor(
                 }
 
             }.asLiveData().observeForever { result ->
-                when (result.status) {
-                    Status.LOADING -> {
-                        response.postValue(result)
+                try {
+                    when (result.status) {
+                        Status.LOADING -> {
+                            response.postValue(result)
+                        }
+                        Status.SUCCESS -> {
+                            response.postValue(result)
+                            callback.onResult(result.data!!.articles!!, params.key + 1)
+                        }
+                        Status.ERROR -> {
+                            response.postValue(result)
+                            setRetry(Action { loadAfter(params, callback) })
+                            repoListRateLimit.reset(rateLimiterKey)
+                            Log.e(TAG, result.message)
+                        }
                     }
-                    Status.SUCCESS -> {
-                        response.postValue(result)
-                        callback.onResult(result.data!!.articles!!, params.key + 1)
-                    }
-                    Status.ERROR -> {
-                        response.postValue(result)
-                        setRetry(Action { loadAfter(params, callback) })
-                        repoListRateLimit.reset(rateLimiterKey)
-                        Log.e(TAG, result.message)
-                    }
+                } catch (e: IllegalStateException) {
+                    Timber.e("IllegalStateException occurred, lets retry by invalidating")
+                    //try self invalidate
+                    invalidate()
                 }
             }
         }
