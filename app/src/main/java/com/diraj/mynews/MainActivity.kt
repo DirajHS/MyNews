@@ -42,6 +42,5 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, IActionBar
     override fun setUpToolbar(collapsingToolbarLayout: CollapsingToolbarLayout, toolbar: Toolbar) {
         Timber.d("setUpToolbar")
         setSupportActionBar(toolbar)
-
     }
 }

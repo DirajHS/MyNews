@@ -3,11 +3,7 @@ package com.diraj.mynews.ui.adapters
 import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.TranslateAnimation
-import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DiffUtil
@@ -98,38 +94,10 @@ class TopHeadlinesAdapter(
         fun bindTo(article: Articles) {
             binding.setVariable(BR.article, article)
             binding.tvArticleTitle.setOnClickListener { view ->
-                //val transitionName = binding.root.context.getString(R.string.transition_name)
-                //ViewCompat.setTransitionName(binding.ivNewsThumbnail, transitionName)
-                //itemClickCallback.onItemClicked(article, binding.ivNewsThumbnail, transitionName)
-                slideAnimate(binding.ivAnimateThumbnail, article, view)
+                val transitionName = binding.root.context.getString(R.string.transition_name)
+                ViewCompat.setTransitionName(binding.ivNewsThumbnail, transitionName)
+                itemClickCallback.onItemClicked(article, binding.ivNewsThumbnail, transitionName)
             }
-        }
-
-        private fun slideAnimate(imageView: ImageView, article: Articles, view: View) {
-            imageView.visibility = View.VISIBLE
-            val animate = TranslateAnimation(
-                imageView.width.toFloat(), // fromXDelta
-                0f, // toXDelta
-                0f, // fromYDelta
-                0f
-            )                // toYDelta
-            animate.duration = 350
-            animate.fillAfter = true
-            imageView.startAnimation(animate)
-            animate.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationRepeat(animation: Animation?) {
-                }
-
-                override fun onAnimationStart(animation: Animation?) {
-                }
-
-                override fun onAnimationEnd(animation: Animation?) {
-                    val transitionName = binding.root.context.getString(R.string.transition_name)
-                    ViewCompat.setTransitionName(binding.ivAnimateThumbnail, transitionName)
-                    itemClickCallback.onItemClicked(article, imageView, transitionName)
-                }
-
-            })
         }
     }
 }

@@ -6,7 +6,7 @@
     <fragment android:id="@+id/tabbedNewsFragment" android:name="com.diraj.mynews.ui.TabbedNewsFragment"
               android:label="TabbedNewsFragment" tools:layout="@layout/tabbed_news_layout">
         <action android:id="@+id/action_tabbedNewsFragment_to_newsDetailsFragment"
-                app:destination="@id/newsDetailsFragment"/>
+                app:destination="@id/newsDetailsFragment" app:enterAnim="@anim/nav_default_pop_enter_anim"/>
     </fragment>
     <fragment android:id="@+id/newsDetailsFragment" android:name="com.diraj.mynews.ui.details.NewsDetailsFragment"
               android:label="news_details_fragment" tools:layout="@layout/news_details_fragment"/>
