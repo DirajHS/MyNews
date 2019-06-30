@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">MyNews</string>
-    <string name="error_message">Oops!! Something went wrong. Please check your Internet connection. Tap to retry.
+    <string name="error_message">Something went wrong. Please check your Internet connection. Tap to retry.
     </string>
     <string name="transition_name">textView</string>
+    <string name="more">more</string>
 </resources>

@@ -2,6 +2,10 @@ package com.diraj.mynews.ui.details
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +25,11 @@ import com.diraj.mynews.di.GlideApp
 import com.diraj.mynews.model.Articles
 import com.google.android.material.appbar.AppBarLayout
 
-
 class NewsDetailsFragment : Fragment() {
 
     private lateinit var newsLayoutBinding: NewsDetailsFragmentBinding
+
+    private lateinit var article: Articles
 
     companion object {
         fun newInstance() = NewsDetailsFragment()
@@ -50,11 +55,12 @@ class NewsDetailsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NewsDetailsViewModel::class.java)
 
-        val article = arguments!!.getSerializable("article") as Articles
+        article = arguments!!.getSerializable("article") as Articles
         newsLayoutBinding.toolbarImage.load(article.urlToImage) {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
             startPostponedEnterTransition()
             newsLayoutBinding.setVariable(BR.article, article)
+            addUrl()
         }
 
         setUpToolbar()
@@ -102,6 +108,24 @@ class NewsDetailsFragment : Fragment() {
             .load(url)
             .listener(listener)
             .into(this)
+    }
+
+    private fun addUrl() {
+
+        if(article.content == null)
+            return
+
+        val patternStart = "[+"
+        val patternEnd = "]"
+        val startIndex = article.content!!.indexOf(patternStart)
+        val endIndex = article.content!!.indexOf(patternEnd)
+
+        val spannableString = SpannableString(article.content)
+        val url = article.url
+        spannableString.setSpan(URLSpan(url), startIndex, endIndex + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        newsLayoutBinding.tvContent.text = spannableString
+        newsLayoutBinding.tvContent.movementMethod = LinkMovementMethod.getInstance()
     }
 
 }

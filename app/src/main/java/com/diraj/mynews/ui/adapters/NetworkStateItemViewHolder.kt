@@ -24,8 +24,10 @@ class NetworkStateItemViewHolder(
         }
         if (networkState != null && networkState.status === Status.ERROR) {
             binding.tvError.visibility = View.VISIBLE
+            binding.ivOops.visibility = View.VISIBLE
         } else {
             binding.tvError.visibility = View.GONE
+            binding.ivOops.visibility = View.GONE
         }
     }
 }

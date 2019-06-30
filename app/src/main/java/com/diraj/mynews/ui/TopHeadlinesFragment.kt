@@ -22,6 +22,7 @@ import com.diraj.mynews.model.Articles
 import com.diraj.mynews.network.Status
 import com.diraj.mynews.ui.adapters.IOnClickInterface
 import com.diraj.mynews.ui.adapters.TopHeadlinesAdapter
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -110,6 +111,7 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
                 DividerItemDecoration.VERTICAL
             )
         )
+        topHeadlinesBinding.rvTopHeadlines.itemAnimator = SlideInDownAnimator()
     }
 
     private fun observeData() {
@@ -125,7 +127,6 @@ class TopHeadlinesFragment : Fragment(), Injectable, IOnClickInterface<Articles>
             }
         })
 
-        (topHeadlinesBinding.rvTopHeadlines.layoutManager as LinearLayoutManager).scrollToPosition(25)
         viewModel.statusResource.observe(this, Observer { status ->
             topHeadlinesBinding.animProgress.visibility =
                 if (viewModel.listIsEmpty() && status.status == Status.LOADING) View.VISIBLE else View.GONE

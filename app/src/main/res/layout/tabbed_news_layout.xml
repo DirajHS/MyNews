@@ -27,6 +27,8 @@
                     android:id="@+id/tab_layout"
                     app:tabGravity="fill"
                     app:tabMode="scrollable"
+                    app:tabTextColor="@android:color/background_light"
+                    android:background="@color/colorPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
