@@ -8,7 +8,7 @@ data class Articles(
     val title: String? = null,
     val description: String? = null,
     val url: String? = null,
-    val urlToImage: String,
+    val urlToImage: String? = null,
     val publishsedAt: String? = null,
     val content: String? = null
 ) : Serializable

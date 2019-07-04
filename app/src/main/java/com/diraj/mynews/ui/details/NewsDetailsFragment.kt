@@ -1,5 +1,6 @@
 package com.diraj.mynews.ui.details
 
+import android.app.SharedElementCallback
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.SpannableString
@@ -13,10 +14,13 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.transition.Transition
 import androidx.transition.TransitionInflater
+import androidx.transition.TransitionListenerAdapter
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.diraj.mynews.BR
 import com.diraj.mynews.R
@@ -24,6 +28,7 @@ import com.diraj.mynews.databinding.NewsDetailsFragmentBinding
 import com.diraj.mynews.di.GlideApp
 import com.diraj.mynews.model.Articles
 import com.google.android.material.appbar.AppBarLayout
+import timber.log.Timber
 
 class NewsDetailsFragment : Fragment() {
 
@@ -56,14 +61,30 @@ class NewsDetailsFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(NewsDetailsViewModel::class.java)
 
         article = arguments!!.getSerializable("article") as Articles
-        newsLayoutBinding.toolbarImage.load(article.urlToImage) {
-            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-            startPostponedEnterTransition()
-            newsLayoutBinding.setVariable(BR.article, article)
-            addUrl()
+        if(article.urlToImage != null) {
+            newsLayoutBinding.toolbarImage.load(article.urlToImage!!, loadOnlyFromCache = true) {
+                showNewsDetails()
+            }
+        } else {
+            showNewsDetails()
         }
 
         setUpToolbar()
+    }
+
+    private fun showNewsDetails() {
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        (sharedElementEnterTransition as Transition).addListener(object :
+            TransitionListenerAdapter() {
+            override fun onTransitionEnd(transition: Transition) {
+                super.onTransitionEnd(transition)
+                article.urlToImage?.let { newsLayoutBinding.toolbarImage.load(it) }
+            }
+        })
+        startPostponedEnterTransition()
+        newsLayoutBinding.setVariable(BR.article, article)
+        addUrl()
     }
 
     private fun setUpToolbar() {
@@ -86,7 +107,7 @@ class NewsDetailsFragment : Fragment() {
         })
     }
 
-    fun ImageView.load(url: String, onLoadingFinished: () -> Unit = {}) {
+    fun ImageView.load(url: String, loadOnlyFromCache: Boolean = false, onLoadingFinished: () -> Unit = {}) {
         val listener = object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?, model: Any?, target: Target<Drawable>?,
@@ -104,25 +125,30 @@ class NewsDetailsFragment : Fragment() {
                 return false
             }
         }
+        val requestOptions = RequestOptions.placeholderOf(R.drawable.placeholder)
+            .dontTransform()
+            .onlyRetrieveFromCache(loadOnlyFromCache)
         GlideApp.with(this)
             .load(url)
+            .apply(requestOptions)
             .listener(listener)
             .into(this)
     }
 
     private fun addUrl() {
 
-        if(article.content == null)
+        if (article.content == null)
             return
 
         val patternStart = "[+"
         val patternEnd = "]"
         val startIndex = article.content!!.indexOf(patternStart)
-        val endIndex = article.content!!.indexOf(patternEnd)
+        val endIndex = article.content!!.indexOf(patternEnd, startIndex)
 
         val spannableString = SpannableString(article.content)
         val url = article.url
-        spannableString.setSpan(URLSpan(url), startIndex, endIndex + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if((startIndex in 1 until endIndex) && (endIndex < article.content!!.length))
+            spannableString.setSpan(URLSpan(url), startIndex, endIndex + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         newsLayoutBinding.tvContent.text = spannableString
         newsLayoutBinding.tvContent.movementMethod = LinkMovementMethod.getInstance()
